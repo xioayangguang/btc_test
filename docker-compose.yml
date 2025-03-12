@@ -1,0 +1,15 @@
+networks:
+  btcd:
+services:
+  btcd:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: btcd_full_node
+    volumes:
+      - ./btcd:/root/.btcd
+    ports:
+      - 8333:8333
+      - 8334:8334
+    networks:
+      - btcd

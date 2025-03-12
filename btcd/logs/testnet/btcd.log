@@ -1,0 +1,86 @@
+2025-02-23 05:02:44.849 [INF] BTCD: Version 0.24.2-beta
+2025-02-23 05:02:44.852 [INF] BTCD: Loading block database from '/root/.btcd/data/testnet/blocks_ffldb'
+2025-02-23 05:02:44.871 [INF] BTCD: Block database loaded
+2025-02-23 05:02:44.877 [INF] INDX: Transaction index is enabled
+2025-02-23 05:02:44.877 [INF] INDX: Address index is enabled
+2025-02-23 05:02:44.877 [INF] INDX: Committed filter index is enabled
+2025-02-23 05:02:44.878 [INF] CHAN: Pre-alloacting for 251 MiB
+2025-02-23 05:02:44.882 [INF] INDX: Catching up indexes from height -1 to 0
+2025-02-23 05:02:44.887 [INF] INDX: Indexes caught up to height 0
+2025-02-23 05:02:44.887 [INF] CHAN: Chain state (height 0, hash 000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943, totaltx 1, work 4295032833)
+2025-02-23 05:02:44.909 [INF] AMGR: Loaded 0 addresses from file '/root/.btcd/data/testnet/peers.json'
+2025-02-23 05:02:44.909 [INF] RPCS: RPC server listening on 0.0.0.0:8334
+2025-02-23 05:02:44.915 [INF] CMGR: Server listening on [::]:18333
+2025-02-23 05:02:44.915 [INF] CMGR: Server listening on 0.0.0.0:18333
+2025-02-23 05:02:44.954 [INF] CMGR: 1 addresses found from DNS seed testnet-seed.bitcoin.jonasschnelli.ch
+2025-02-23 05:02:44.954 [INF] CMGR: 1 addresses found from DNS seed seed.testnet.bitcoin.sprovoost.nl
+2025-02-23 05:02:44.954 [INF] CMGR: 1 addresses found from DNS seed seed.tbtc.petertodd.net
+2025-02-23 05:02:44.954 [INF] CMGR: 1 addresses found from DNS seed testnet-seed.bluematt.me
+2025-02-24 01:54:52.575 [INF] BTCD: Received signal (terminated).  Shutting down...
+2025-02-24 01:54:52.577 [INF] BTCD: Gracefully shutting down the server...
+2025-02-24 01:54:52.577 [WRN] SRVR: Server shutting down
+2025-02-24 01:54:52.577 [WRN] RPCS: RPC server shutting down
+2025-02-24 01:54:52.578 [INF] RPCS: RPC server shutdown complete
+2025-02-24 01:54:52.592 [INF] SYNC: Sync manager shutting down
+2025-02-24 01:54:52.592 [INF] CHAN: Flushing UTXO cache of 97 MiB with 0 entries to disk. For large sizes, this can take up to several minutes...
+2025-02-24 01:54:52.603 [INF] AMGR: Address manager shutting down
+2025-02-24 01:54:52.605 [INF] SRVR: Server shutdown complete
+2025-02-24 01:54:52.605 [INF] BTCD: Gracefully shutting down the database...
+2025-02-24 01:54:52.608 [INF] BTCD: Shutdown complete
+2025-02-24 01:54:57.927 [INF] BTCD: Version 0.24.2-beta
+2025-02-24 01:54:57.931 [INF] BTCD: Loading block database from '/root/.btcd/data/testnet/blocks_ffldb'
+2025-02-24 01:54:57.960 [INF] BTCD: Block database loaded
+2025-02-24 01:54:57.969 [INF] INDX: Transaction index is enabled
+2025-02-24 01:54:57.969 [INF] INDX: Address index is enabled
+2025-02-24 01:54:57.969 [INF] INDX: Committed filter index is enabled
+2025-02-24 01:54:57.970 [INF] CHAN: Pre-alloacting for 251 MiB
+2025-02-24 01:54:57.975 [INF] CHAN: Loading block index...
+2025-02-24 01:54:57.982 [INF] CHAN: Chain state (height 0, hash 000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943, totaltx 1, work 4295032833)
+2025-02-24 01:54:58.006 [INF] RPCS: RPC server listening on 0.0.0.0:8334
+2025-02-24 01:54:58.009 [INF] AMGR: Loaded 0 addresses from file '/root/.btcd/data/testnet/peers.json'
+2025-02-24 01:54:58.010 [INF] CMGR: Server listening on 0.0.0.0:18333
+2025-02-24 01:54:58.010 [INF] CMGR: Server listening on [::]:18333
+2025-02-24 01:54:58.440 [INF] CMGR: 3 addresses found from DNS seed testnet-seed.bluematt.me
+2025-02-24 01:54:58.486 [INF] CMGR: 37 addresses found from DNS seed seed.tbtc.petertodd.net
+2025-02-24 01:54:58.538 [INF] CMGR: 23 addresses found from DNS seed testnet-seed.bitcoin.jonasschnelli.ch
+2025-02-24 01:54:58.815 [INF] CMGR: 34 addresses found from DNS seed seed.testnet.bitcoin.sprovoost.nl
+2025-02-24 01:55:03.448 [INF] SYNC: New valid peer 44.241.182.5:18333 (outbound) (/btcwire:0.5.0/btcd:0.23.2/)
+2025-02-24 01:55:03.450 [INF] SYNC: Syncing to block height 2401568 from peer 44.241.182.5:18333
+2025-02-24 01:55:03.451 [INF] SYNC: Downloading headers for blocks 1 to 546 from peer 44.241.182.5:18333
+2025-02-24 01:55:03.474 [INF] SYNC: New valid peer 52.18.153.97:18333 (outbound) (/Satoshi:26.0.0/)
+2025-02-24 01:55:03.523 [INF] SYNC: New valid peer 85.203.53.149:18333 (outbound) (/Satoshi:28.1.0/)
+2025-02-24 01:55:03.527 [INF] SYNC: New valid peer 72.211.1.222:18333 (outbound) (/Satoshi:25.0.0/)
+2025-02-24 01:55:03.651 [INF] SYNC: New valid peer 95.217.208.234:18333 (outbound) (/Satoshi:28.1.0/)
+2025-02-24 01:55:08.543 [INF] SYNC: New valid peer 54.77.44.243:18333 (outbound) (/Satoshi:28.0.0/)
+2025-02-24 01:55:09.568 [INF] SYNC: Lost peer 52.18.153.97:18333 (outbound)
+2025-02-24 01:55:27.595 [INF] SYNC: New valid peer 141.98.219.199:18333 (outbound) (/Satoshi:28.1.0/)
+2025-02-24 01:56:10.049 [INF] SYNC: New valid peer 34.69.221.24:18333 (outbound) (/Satoshi:27.2.0/)
+2025-02-24 01:56:48.450 [INF] SYNC: Lost peer 44.241.182.5:18333 (outbound)
+2025-02-24 01:56:48.451 [INF] SYNC: Syncing to block height 3877564 from peer 54.77.44.243:18333
+2025-02-24 01:56:48.451 [INF] SYNC: Downloading headers for blocks 1 to 546 from peer 54.77.44.243:18333
+2025-02-24 01:56:49.139 [INF] SYNC: Verified downloaded block header against checkpoint at height 546/hash 000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70
+2025-02-24 01:56:49.139 [INF] SYNC: Received 546 block headers: Fetching blocks
+2025-02-24 01:56:50.504 [INF] CHAN: Verified checkpoint at height 546/block 000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70
+2025-02-24 01:56:50.505 [INF] SYNC: Downloading headers for blocks 547 to 100000 from peer 54.77.44.243:18333
+2025-02-24 01:57:02.487 [INF] SYNC: Verified downloaded block header against checkpoint at height 100000/hash 00000000009e2958c15ff9290d571bf9459e93b19765c6801ddeccadbb160a1e
+2025-02-24 01:57:02.487 [INF] SYNC: Received 99454 block headers: Fetching blocks
+2025-02-24 01:57:12.487 [INF] SYNC: Processed 14591 blocks in the last 10s (25464 transactions, height 14591, 2012-05-28 11:35:36 +0000 UTC, ~98 MiB cache)
+2025-02-24 01:57:22.488 [INF] SYNC: Processed 25822 blocks in the last 10s (38071 transactions, height 40413, 2012-12-20 06:49:51 +0000 UTC, ~100 MiB cache)
+2025-02-24 01:57:32.488 [INF] SYNC: Processed 16941 blocks in the last 10s (32482 transactions, height 57354, 2013-03-13 02:38:11 +0000 UTC, ~103 MiB cache)
+2025-02-24 01:57:42.488 [INF] SYNC: Processed 13315 blocks in the last 10s (84599 transactions, height 70669, 2013-05-02 01:50:50 +0000 UTC, ~111 MiB cache)
+2025-02-24 01:57:53.506 [INF] SYNC: Processed 9720 blocks in the last 11.01s (238465 transactions, height 80389, 2013-05-19 21:36:25 +0000 UTC, ~113 MiB cache)
+2025-02-24 01:58:03.509 [INF] SYNC: Processed 12780 blocks in the last 10s (142556 transactions, height 93169, 2013-06-25 13:08:18 +0000 UTC, ~114 MiB cache)
+2025-02-24 01:58:08.433 [INF] CHAN: Verified checkpoint at height 100000/block 00000000009e2958c15ff9290d571bf9459e93b19765c6801ddeccadbb160a1e
+2025-02-24 01:58:08.433 [INF] SYNC: Downloading headers for blocks 100001 to 200000 from peer 54.77.44.243:18333
+2025-02-24 01:58:09.925 [INF] SYNC: Lost peer 141.98.219.199:18333 (outbound)
+2025-02-24 01:58:21.334 [INF] SYNC: Verified downloaded block header against checkpoint at height 200000/hash 0000000000287bffd321963ef05feab753ebe274e1d78b2fd4e2bfe9ad3aa6f2
+2025-02-24 01:58:21.334 [INF] SYNC: Received 100000 block headers: Fetching blocks
+2025-02-24 01:58:31.335 [INF] SYNC: Processed 23737 blocks in the last 10s (93867 transactions, height 116906, 2013-10-11 14:17:08 +0000 UTC, ~117 MiB cache)
+2025-02-24 01:58:41.335 [INF] SYNC: Processed 12656 blocks in the last 10s (61862 transactions, height 129562, 2013-11-10 17:35:29 +0000 UTC, ~120 MiB cache)
+2025-02-24 01:58:51.335 [INF] SYNC: Processed 13035 blocks in the last 10s (92295 transactions, height 142597, 2013-11-15 21:50:45 +0000 UTC, ~121 MiB cache)
+2025-02-24 01:59:01.336 [INF] SYNC: Processed 8453 blocks in the last 10s (76995 transactions, height 151050, 2013-12-06 16:07:56 +0000 UTC, ~123 MiB cache)
+2025-02-24 01:59:11.336 [INF] SYNC: Processed 7442 blocks in the last 10s (115302 transactions, height 158492, 2014-01-05 03:17:35 +0000 UTC, ~122 MiB cache)
+2025-02-24 01:59:21.337 [INF] SYNC: Processed 19049 blocks in the last 10s (86306 transactions, height 177541, 2014-01-31 07:02:26 +0000 UTC, ~124 MiB cache)
+2025-02-24 01:59:31.344 [INF] SYNC: Processed 16178 blocks in the last 10s (62213 transactions, height 193719, 2014-02-28 04:06:45 +0000 UTC, ~126 MiB cache)
+2025-02-24 01:59:34.525 [INF] CHAN: Verified checkpoint at height 200000/block 0000000000287bffd321963ef05feab753ebe274e1d78b2fd4e2bfe9ad3aa6f2
+2025-02-24 01:59:34.526 [INF] SYNC: Downloading headers for blocks 200001 to 300001 from peer 54.77.44.243:18333
