@@ -16,7 +16,7 @@ import (
 //
 //这是最常见的比特币交易类型，使用普通的比特币地址（如 1ABC... 或 tb1q...）。
 
-func main() {
+func main2() {
 	// 使用比特币测试网参数
 	cfg := &chaincfg.TestNet3Params
 	// 解码 WIF 格式的私钥
