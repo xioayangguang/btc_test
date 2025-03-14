@@ -13,6 +13,7 @@ import (
 	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	//_ "github.com/btcsuite/btcwallet"
 	"github.com/pkg/errors"
 	"log"
@@ -29,20 +30,13 @@ func init() {
 	}
 	//Connect to local bitcoin core RPC server using HTTP POST mode.
 	connCfg := &rpcclient.ConnConfig{
-		//Host: "localhost:8334",
-		Host: "localhost:18332",
-		//Host:         "nd-587-560-527.p2pify.com",
-		//Host:         "open-platform.nodereal.io/349bb434a87a433a845d60ddbc7b5215/bitcoin",
+		Host:         "localhost:18332",
 		User:         "your_rpc_user",
 		Pass:         "your_rpc_password",
 		HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
 		DisableTLS:   true, // Bitcoin core does not provide TLS by default
-		//DisableTLS: true, // Bitcoin core does not provide TLS by default
 		Certificates: cert,
 	}
-
-	// Notice the notification parameter is nil since notifications are
-	// not supported in HTTP POST mode.
 	c, err := rpcclient.New(connCfg, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -50,261 +44,169 @@ func init() {
 	client = c
 }
 
-func GenerateBTC() (string, string, error) {
-	//privKey, err := btcec.NewPrivateKey(btcec.S256())
-	privKey, err := btcec.NewPrivateKey()
-	if err != nil {
-		return "", "", err
-	}
-
-	privKeyWif, err := btcutil.NewWIF(privKey, &chaincfg.MainNetParams, false)
-	if err != nil {
-		return "", "", err
-	}
-	pubKeySerial := privKey.PubKey().SerializeUncompressed()
-
-	pubKeyAddress, err := btcutil.NewAddressPubKey(pubKeySerial, &chaincfg.MainNetParams)
-	if err != nil {
-		return "", "", err
-	}
-
-	return privKeyWif.String(), pubKeyAddress.EncodeAddress(), nil
-}
-
-func GenerateBTCTest() (string, string, error) {
-	//privKey, err := btcec.NewPrivateKey(btcec.S256())
-	privKey, err := btcec.NewPrivateKey()
-	if err != nil {
-		return "", "", err
-	}
-
-	privKeyWif, err := btcutil.NewWIF(privKey, &chaincfg.TestNet3Params, false)
-	if err != nil {
-		return "", "", err
-	}
-	pubKeySerial := privKey.PubKey().SerializeUncompressed()
-	//fmt.Println(string(pubKeySerial))
-	pubKeyAddress, err := btcutil.NewAddressPubKey(pubKeySerial, &chaincfg.TestNet3Params)
-	if err != nil {
-		return "", "", err
-	}
-
-	//pubKeyAddress, err := btcutil.newadd(pubKeySerial, &chaincfg.TestNet3Params)
-	//if err != nil {
-	//	return "", "", err
-	//}
-
-	return privKeyWif.String(), pubKeyAddress.EncodeAddress(), nil
-}
-
+// 通过私钥生成所有的私人地址，多签名钱包不属于私人地址。因为和其他不同的钱包地址组合都是不同的多签钱包地址
 func NewBTCAddress() {
-
-	// 生成私钥
-	privKey, err := btcec.NewPrivateKey()
-	if err != nil {
-		panic(err)
+	var pubKey *secp256k1.PublicKey
+	if true {
+		//https://key.tokenpocket.pro/?locale=zh#/?network=BTC
+		wifStr := "L5A7ZqEJswd2RXFdDeWYj2kmLZKnC2HWvzDosdZ8TxsFXvnSrcyb"
+		// 解析 WIF 格式的私钥
+		wif, err := btcutil.DecodeWIF(wifStr)
+		if err != nil {
+			log.Fatalf("解析 WIF 失败: %v", err)
+		}
+		pubKey = wif.PrivKey.PubKey()
+	} else {
+		privKey, err := btcec.NewPrivateKey()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("===================Private Key===============================")
+		fmt.Printf("Binary Private Key: %x\n", privKey.Serialize())
+		WIFPrivate, err := btcutil.NewWIF(privKey, &chaincfg.MainNetParams, true)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("compressed WIF Private Key: %s\n", WIFPrivate.String())
+		wifPrivate, err := btcutil.NewWIF(privKey, &chaincfg.MainNetParams, false)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Uncompressed WIF Private Key: %s\n", wifPrivate.String())
+		fmt.Println()
+		fmt.Println("=================== Public Key===============================")
+		// 导出公钥
+		pubKey = privKey.PubKey()
 	}
-	fmt.Println("===================Private Key===============================")
-	fmt.Printf("Binary Private Key: %x\n", privKey.Serialize())
-	WIFPrivate, err := btcutil.NewWIF(privKey, &chaincfg.MainNetParams, true)
-	if err != nil {
-		panic(err)
-	}
-	//
-	//WIFPrivate, err = btcutil.DecodeWIF("KzqEgoWNrn2nqKRtj9cETHtBCJJdx8s5GYZfVmB8SUGv6aw6spir")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//WIFPrivate, err = btcutil.NewWIF(WIFPrivate.PrivKey, &chaincfg.MainNetParams, false)
-	//if err != nil {
-	//	panic(err)
-	//}
-	fmt.Printf("compressed WIF Private Key: %s\n", WIFPrivate.String())
 
-	wifPrivate, err := btcutil.NewWIF(privKey, &chaincfg.MainNetParams, false)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Uncompressed WIF Private Key: %s\n", wifPrivate.String())
-
-	fmt.Println()
-	fmt.Println("=================== Public Key===============================")
-	// 导出公钥
-	pubKey := privKey.PubKey()
 	compressedPubKey := pubKey.SerializeCompressed()
 	fmt.Printf("compressed  Public Key: %x\n", compressedPubKey)
-
 	uncompressedPubKey := pubKey.SerializeUncompressed()
 	fmt.Printf("Uncompressed Public Key: %x\n", uncompressedPubKey)
-
+	pubKeyHashUnCompressed := btcutil.Hash160(uncompressedPubKey)
+	pubKeyHashCompressed := btcutil.Hash160(compressedPubKey)
+	fmt.Println()
 	fmt.Println("===================P2PKH===============================")
 	addressPKH, err := btcutil.NewAddressPubKey(compressedPubKey, &chaincfg.MainNetParams)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("compressed P2PKH Address: %s\n", addressPKH.EncodeAddress())
-
 	// 生成BTC地址（P2PKH）
 	addressPKH, err = btcutil.NewAddressPubKey(uncompressedPubKey, &chaincfg.MainNetParams)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("unCompressed P2PKH Address: %s\n", addressPKH.EncodeAddress())
-
 	fmt.Println()
-
-	fmt.Println("===================P2SH  兼容隔离见证地址（不正确）===============================")
-	// 生成公钥hash
-	pubKeyHash := btcutil.Hash160(compressedPubKey)
-	// 生成P2SH地址
-	addressP2SH, err := btcutil.NewAddressScriptHashFromHash(pubKeyHash, &chaincfg.MainNetParams)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("compressed P2SH Address: %s\n", addressP2SH.EncodeAddress())
-	pubKeyHash = btcutil.Hash160(uncompressedPubKey)
-	// 生成P2SH地址
-	addressP2SH, err = btcutil.NewAddressScriptHashFromHash(pubKeyHash, &chaincfg.MainNetParams)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("unCompressed P2SH Address: %s\n", addressP2SH.EncodeAddress())
-	fmt.Println()
-
-	fmt.Println("===================Bech32编码地址是专为SegWit 开发的地址格式（P2WPKH） 原生隔离见证地址===================")
-	// 生成公钥hash
-	pubKeyHash = btcutil.Hash160(compressedPubKey)
+	fmt.Println("===================Bech32编码地址是专为SegWit 原生隔离见证地址===================")
 	// 生成Bech32地址（P2WPKH）
-	addressBech32, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
+	addressBech32_1, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHashCompressed, &chaincfg.MainNetParams)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("compressed Bech32 Address: %s\n", addressBech32.EncodeAddress())
-
-	pubKeyHash = btcutil.Hash160(uncompressedPubKey)
-	addressBech32, err = btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
+	fmt.Printf("compressed Bech32 Address: %s\n", addressBech32_1.EncodeAddress())
+	addressBech32_2, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHashUnCompressed, &chaincfg.MainNetParams)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("unCompressed Bech32 Address: %s\n", addressBech32.EncodeAddress())
+	fmt.Printf("unCompressed Bech32 Address: %s\n", addressBech32_2.EncodeAddress())
 	fmt.Println()
-
-	fmt.Println("===================taprootAddr===============================")
-	taprootAddr, _ := btcutil.NewAddressTaproot(
-		schnorr.SerializePubKey(txscript.ComputeTaprootKeyNoScript(pubKey)),
-		&chaincfg.MainNetParams,
-	)
-	fmt.Printf("taprootAddr Address: %s\n", taprootAddr.EncodeAddress())
-}
-
-// 这个地址生成是正确的方式
-// https://key.tokenpocket.pro/?locale=zh#/?network=BTC
-func TestAAA(t *testing.T) {
-	// 给定的 WIF 格式私钥
-	wifStr := "L5A7ZqEJswd2RXFdDeWYj2kmLZKnC2HWvzDosdZ8TxsFXvnSrcyb"
-	// 解析 WIF 格式的私钥
-	wif, err := btcutil.DecodeWIF(wifStr)
-	if err != nil {
-		log.Fatalf("解析 WIF 失败: %v", err)
-	}
-	// 获取公钥的哈希值（用于 P2WPKH 脚本）
-	pubKeyHash := btcutil.Hash160(wif.PrivKey.PubKey().SerializeCompressed())
-	// 构造 P2WPKH 地址
-	witnessAddr, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
-	if err != nil {
-		log.Fatalf("生成 P2WPKH 地址失败: %v", err)
-	}
-	fmt.Println("原生隔离见证地址:", witnessAddr.EncodeAddress())
-	// 构造 P2WPKH 脚本
-	witnessScript, err := txscript.PayToAddrScript(witnessAddr)
+	fmt.Println("===================P2SH 兼容隔离见证地址===============================")
+	fmt.Println("3开头的地址一部分是多签地址，一部分是隔离见证兼容地址，具体属于那种地址可以去区块链浏览器查看地址类型")
+	fmt.Println("3开头的多签地址 本钱包和其他任何地址组合成的多签地址都不一样")
+	witnessScript, err := txscript.PayToAddrScript(addressBech32_1)
 	if err != nil {
 		log.Fatalf("构造 P2WPKH 脚本失败: %v", err)
 	}
-	// 生成 P2SH 地址
 	address1, err := btcutil.NewAddressScriptHash(witnessScript, &chaincfg.MainNetParams)
 	if err != nil {
 		log.Fatalf("生成 P2SH 地址失败: %v", err)
 	}
-	// 输出 P2SH 地址
-	fmt.Println("兼容隔离见证地址P2SH-P2WPKH 地址:", address1.EncodeAddress())
-}
+	fmt.Printf("compressed P2SH Address: %s\n", address1.EncodeAddress())
 
-func TestAA(t *testing.T) {
-	// 给定的 WIF 格式私钥
-	wifStr := "L5aEEiUry5cAnfFqJvP9TxgqhVJWUa5ExWSaLmXND5YzgckkJpcJ"
-	// 1. 解析 WIF 格式的私钥
-	wif, err := btcutil.DecodeWIF(wifStr)
+	witnessScript, err = txscript.PayToAddrScript(addressBech32_2)
 	if err != nil {
-		log.Fatalf("解析 WIF 失败: %v", err)
+		log.Fatalf("构造 P2WPKH 脚本失败: %v", err)
 	}
-	// 2. 提取私钥和压缩标志
-	privateKey := wif.PrivKey
-	compressed := wif.CompressPubKey
-	// 3. 生成公钥
-	pubKey := privateKey.PubKey()
-	var pubKeyBytes []byte
-	if compressed {
-		pubKeyBytes = pubKey.SerializeCompressed() // 压缩公钥
-	} else {
-		pubKeyBytes = pubKey.SerializeUncompressed() // 未压缩公钥
-	}
-
-	// 4. 生成 P2PKH 地址
-	p2pkhAddr, err := btcutil.NewAddressPubKeyHash(btcutil.Hash160(pubKeyBytes), &chaincfg.MainNetParams)
-	if err != nil {
-		log.Fatalf("生成 P2PKH 地址失败: %v", err)
-	}
-
-	// 5. 生成 P2SH-P2WPKH 地址 (嵌套 SegWit 地址)
-	//witnessAddr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(pubKeyBytes), &chaincfg.MainNetParams)
-	//if err != nil {
-	//	log.Fatalf("生成 Witness 地址失败: %v", err)
-	//}
-
-	p2shAddr, err := btcutil.NewAddressScriptHash(pubKeyBytes, &chaincfg.MainNetParams)
+	address1, err = btcutil.NewAddressScriptHash(witnessScript, &chaincfg.MainNetParams)
 	if err != nil {
 		log.Fatalf("生成 P2SH 地址失败: %v", err)
 	}
-	//上下等价  生产的都是错误的地址，正确的地址是  33LBZmuhZoqS218MfTWHqaVEKkrTTiRZkJ
-	addressP2SH, err := btcutil.NewAddressScriptHashFromHash(btcutil.Hash160(pubKeyBytes), &chaincfg.MainNetParams)
-	if err != nil {
-		log.Fatalf("生成 P2SH 地址失败: %v", err)
-	}
-
-	// 6. 生成 Bech32 地址 (原生 SegWit 地址)
-	bech32Addr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(pubKeyBytes), &chaincfg.MainNetParams)
-	if err != nil {
-		log.Fatalf("生成 Bech32 地址失败: %v", err)
-	}
-
-	taprootAddr, _ := btcutil.NewAddressTaproot(
-		schnorr.SerializePubKey(txscript.ComputeTaprootKeyNoScript(pubKey)),
-		&chaincfg.MainNetParams,
-	)
-
-	// 输出结果
-	fmt.Println("私钥 (WIF):", wifStr)
-	fmt.Println("P2PKH 地址 (传统地址):", p2pkhAddr.EncodeAddress())
-	//fmt.Println("witnessAddr地址:", witnessAddr.EncodeAddress())
-	fmt.Println("P2SH-P2WPKH 地址 (嵌套 SegWit 地址):", p2shAddr.EncodeAddress())
-	fmt.Println("P2SH-P2WPKH 地址 (嵌套 SegWit 地址):", addressP2SH.EncodeAddress())
-	fmt.Println("Bech32 地址 (原生 SegWit 地址):", bech32Addr.EncodeAddress())
-	fmt.Println("taprootAddr 地址:", taprootAddr.EncodeAddress())
+	fmt.Printf("unCompressed P2SH Address: %s\n", address1.EncodeAddress())
+	fmt.Println()
+	fmt.Println("===================taprootAddr===============================")
+	taprootAddr, _ := btcutil.NewAddressTaproot(schnorr.SerializePubKey(txscript.ComputeTaprootKeyNoScript(pubKey)), &chaincfg.MainNetParams)
+	fmt.Printf("taprootAddr Address: %s\n", taprootAddr.EncodeAddress())
+	fmt.Println()
 }
 
 func TestA(t *testing.T) {
 	NewBTCAddress()
-	//wifKey, address, _ := GenerateBTCTest() // 测试地址
-	////wifKey, address, _ := GenerateBTC() // 正式地址
-	//fmt.Println(address, wifKey)
+	fmt.Println("===================生成多签地址===============================")
+	GenP2SHAddress()
+}
+
+// 生成私钥和公钥
+func generateKeys() (*btcutil.WIF, []byte) {
+	//   生成私钥
+	privateKey, err := btcec.NewPrivateKey()
+	if err != nil {
+		panic(err)
+	}
+	priKey, err := btcutil.NewWIF(privateKey, &chaincfg.MainNetParams, true)
+	if err != nil {
+		panic(err)
+	}
+	//   生成公钥
+	pubKey := privateKey.PubKey().SerializeCompressed()
+	return priKey, pubKey
+}
+
+func GenP2SHAddress() {
+	//   假设我们要创建一个2-of-3的多重签名脚本（这意味着要花费比特币，需要3个可能的签名者中的2个签名）。
+	_, pubKey1 := generateKeys()
+	address1Pub, err := btcutil.NewAddressPubKey(pubKey1, &chaincfg.MainNetParams)
+	if err != nil {
+		fmt.Println("Error   NewAddressPubKey:", err)
+		return
+	}
+	_, pubKey2 := generateKeys()
+	address2Pub, err := btcutil.NewAddressPubKey(pubKey2, &chaincfg.MainNetParams)
+	if err != nil {
+		fmt.Println("Error   NewAddressPubKey:", err)
+		return
+	}
+	_, pubKey3 := generateKeys()
+	address3Pub, err := btcutil.NewAddressPubKey(pubKey3, &chaincfg.MainNetParams)
+	if err != nil {
+		fmt.Println("Error   NewAddressPubKey:", err)
+		return
+	}
+	//   创建多重签名赎回脚本
+	redeemScript, err := txscript.MultiSigScript([]*btcutil.AddressPubKey{address1Pub, address2Pub, address3Pub}, 2)
+	if err != nil {
+		fmt.Println("Error   creating   redeem   script:", err)
+		return
+	}
+	// 打印赎回脚本（以16进制表示）
+	fmt.Printf("赎回脚本 Redeem Script:   %x\n", redeemScript)
+
+	//计算P2SH地址
+	redeemScriptHash := btcutil.Hash160(redeemScript)
+	address, err := btcutil.NewAddressScriptHashFromHash(redeemScriptHash, &chaincfg.MainNetParams)
+	if err != nil {
+		fmt.Println("Error   creating   P2SH   address:", err)
+		return
+	}
+	//   打印P2SH地址
+	fmt.Println("多签地址 P2SH Address:", address.EncodeAddress())
 }
 
 // https://studygolang.com/articles/12303
 // https://mempool.space/zh/testnet/address/mtvJM2gFAASs6yqifaym1i3pY8GzspNxQ8
 // https://mempool.space/testnet/api/address/mtvJM2gFAASs6yqifaym1i3pY8GzspNxQ8/utxo
 // https://api.blockcypher.com/v1/btc/test3/addrs/mtvJM2gFAASs6yqifaym1i3pY8GzspNxQ8
-
 func TestB(t *testing.T) {
 	address := "mtvJM2gFAASs6yqifaym1i3pY8GzspNxQ8"
 	var balance int64 = 19916    // 余额    //todo  //替换成自己的
