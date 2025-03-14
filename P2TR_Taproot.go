@@ -1,6 +1,7 @@
 package main
 
 import (
+	"btctest/common"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -13,7 +14,8 @@ import (
 )
 
 // https://decision01.com/post/c19159ae
-func main() {
+// https://mempool.space/zh/address/bc1pv808pgwuy5zqqzd72wf7puwgse3a8kgtl4ys69s5lpf698gv7a2sugatth
+func main1() {
 	cfg := &chaincfg.TestNet3Params
 	wif, _ := btcutil.DecodeWIF("cViUtGHsa6XUxxk2Qht23NKJvEzQq5mJYQVFRsEbB1PmSHMmBs4T")
 	taprootAddr, _ := btcutil.NewAddressTaproot(
@@ -22,7 +24,7 @@ func main() {
 	)
 	log.Printf("Taproot testnet address: %s\n", taprootAddr.String())
 
-	point, fetcher := GetUnspent(taprootAddr.String())
+	point, fetcher := common.GetUnspent(taprootAddr.String())
 
 	destStr := "tb1pvwak065fek4y0mup9p4l7t03ey2nu8as7zgcrlgm9mdfl8gs5rzss490qd"
 	byteAddr, _ := DecodeTaprootAddress(destStr, cfg)

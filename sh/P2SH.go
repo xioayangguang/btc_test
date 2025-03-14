@@ -1,7 +1,7 @@
-package main
+package sh
 
 import (
-	main2 "btctest"
+	main2 "btctest/common"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -13,27 +13,17 @@ import (
 	"log"
 )
 
-//
-//P2SH（Pay-to-Script-Hash）
-//
-//P2SH 交易允许将资金发送到一个脚本哈希地址（如 3ABC...），实际赎回脚本在花费时提供。
-//
+// P2SH（Pay-to-Script-Hash）
+// P2SH 交易允许将资金发送到一个脚本哈希地址（如 3ABC...），实际赎回脚本在花费时提供。
+// https://mempool.space/zh/address/3Mg88s8Qjn7Aj9q7wDTRKRnnAbnvFGWkej
 
 func CreateP2SHTransaction() {
 	cfg := &chaincfg.TestNet3Params
-
 	// 解码 WIF 私钥
 	wif, err := btcutil.DecodeWIF("cViUtGHsa6XUxxk2Qht23NKJvEzQq5mJYQVFRsEbB1PmSHMmBs4T")
 	if err != nil {
 		log.Fatalf("Failed to decode WIF: %v", err)
 	}
-
-	// 创建多重签名脚本（2-of-3）
-	//pubKey1 := wif.PrivKey.PubKey()
-	//pubKey2, _ := btcec.NewPrivateKey()
-	//pubKey3, _ := btcec.NewPrivateKey()
-
-	//pk1, _ := hex.DecodeString("02db204a46ab45d872a420fef8abd935f2fe5347684f43ea58599c430f80aa82e5")
 	address1, _ := btcutil.NewAddressPubKey(wif.PrivKey.PubKey().SerializeUncompressed(), cfg)
 	pk2, _ := hex.DecodeString("03073d3cf516dceeffaa53a84059fb8701ff5e291b9537457137be851bbc4e5525")
 	address2, _ := btcutil.NewAddressPubKey(pk2, cfg)

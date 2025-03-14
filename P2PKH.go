@@ -1,20 +1,20 @@
 package main
 
 import (
+	"btctest/common"
 	"bytes"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 	"log"
 )
 
 //P2PKH（Pay-to-PubKey-Hash）
-//
-//这是最常见的比特币交易类型，使用普通的比特币地址（如 1ABC... 或 tb1q...）。
+//这是最常见的比特币交易类型，使用普通的比特币地址
+//https://mempool.space/zh/address/19CPpQHU4nbVLuTEy315roUmJH5GH9sD5r
 
 func main2() {
 	// 使用比特币测试网参数
@@ -33,7 +33,7 @@ func main2() {
 	log.Printf("P2PKH testnet address: %s\n", p2pkhAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := GetUnspent(p2pkhAddr.String())
+	point, fetcher := common.GetUnspent(p2pkhAddr.String())
 
 	// 目标地址（接收方地址）
 	destStr := "tb1q4y8u9e0pz7x6w5z3v2c1b0n9m8l7k6j5i4h3g2f1e0d"
@@ -70,22 +70,4 @@ func main2() {
 
 	// 打印最终的签名交易
 	fmt.Printf("Signed Transaction:\n%s\n", finalRawTx)
-}
-
-// GetUnspent 模拟获取一个未花费的交易输出（UTXO）
-func GetUnspent(address string) (*wire.OutPoint, *txscript.MultiPrevOutFetcher) {
-	// 模拟一个 UTXO
-	txHash, _ := chainhash.NewHashFromStr("7282d54f485561dd21ba22a971b096eb6d0f45ed2fe6bf8c29d87cee162633b4")
-	point := wire.NewOutPoint(txHash, uint32(0))
-
-	// 解码地址并生成脚本
-	addr, _ := btcutil.DecodeAddress(address, &chaincfg.TestNet3Params)
-	script, _ := txscript.PayToAddrScript(addr)
-
-	// 创建一个 UTXO
-	output := wire.NewTxOut(int64(1000), script) // 1000 satoshis
-	fetcher := txscript.NewMultiPrevOutFetcher(nil)
-	fetcher.AddPrevOut(*point, output)
-
-	return point, fetcher
 }

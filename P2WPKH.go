@@ -1,6 +1,7 @@
 package main
 
 import (
+	"btctest/common"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -11,10 +12,9 @@ import (
 	"log"
 )
 
-//P2WPKH（Pay-to-Witness-PubKey-Hash）
-//
-//P2WPKH 是 SegWit 地址（如 bc1q... 或 tb1q...），使用隔离见证技术。
-//
+// P2WPKH（Pay-to-Witness-PubKey-Hash）
+// P2WPKH 是 SegWit 地址
+// https://mempool.space/zh/address/bc1q26nwwj0yssqjhn0ghxcr5r0xtr996e2ezeks2s
 
 func CreateP2WPKHTransaction() {
 	cfg := &chaincfg.TestNet3Params
@@ -34,7 +34,7 @@ func CreateP2WPKHTransaction() {
 	log.Printf("P2WPKH testnet address: %s\n", p2wpkhAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := GetUnspent(p2wpkhAddr.String())
+	point, fetcher := common.GetUnspent(p2wpkhAddr.String())
 
 	// 目标地址
 	destStr := "tb1q4y8u9e0pz7x6w5z3v2c1b0n9m8l7k6j5i4h3g2f1e0d"

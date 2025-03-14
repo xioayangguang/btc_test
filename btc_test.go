@@ -144,24 +144,8 @@ func NewBTCAddress() {
 
 func TestA(t *testing.T) {
 	NewBTCAddress()
-	fmt.Println("===================生成多签地址===============================")
-	GenP2SHAddress()
-}
 
-// 生成私钥和公钥
-func generateKeys() (*btcutil.WIF, []byte) {
-	//   生成私钥
-	privateKey, err := btcec.NewPrivateKey()
-	if err != nil {
-		panic(err)
-	}
-	priKey, err := btcutil.NewWIF(privateKey, &chaincfg.MainNetParams, true)
-	if err != nil {
-		panic(err)
-	}
-	//   生成公钥
-	pubKey := privateKey.PubKey().SerializeCompressed()
-	return priKey, pubKey
+	GenP2SHAddress()
 }
 
 func GenP2SHAddress() {
@@ -192,16 +176,32 @@ func GenP2SHAddress() {
 	}
 	// 打印赎回脚本（以16进制表示）
 	fmt.Printf("赎回脚本 Redeem Script:   %x\n", redeemScript)
-
 	//计算P2SH地址
-	redeemScriptHash := btcutil.Hash160(redeemScript)
-	address, err := btcutil.NewAddressScriptHashFromHash(redeemScriptHash, &chaincfg.MainNetParams)
+	//redeemScriptHash := btcutil.Hash160(redeemScript)
+	address, err := btcutil.NewAddressScriptHash(redeemScript, &chaincfg.MainNetParams)
 	if err != nil {
 		fmt.Println("Error   creating   P2SH   address:", err)
 		return
 	}
+	fmt.Println("===================生成多签地址 P2SH===============================")
 	//   打印P2SH地址
 	fmt.Println("多签地址 P2SH Address:", address.EncodeAddress())
+}
+
+// 生成私钥和公钥
+func generateKeys() (*btcutil.WIF, []byte) {
+	//   生成私钥
+	privateKey, err := btcec.NewPrivateKey()
+	if err != nil {
+		panic(err)
+	}
+	priKey, err := btcutil.NewWIF(privateKey, &chaincfg.MainNetParams, true)
+	if err != nil {
+		panic(err)
+	}
+	//   生成公钥
+	pubKey := privateKey.PubKey().SerializeCompressed()
+	return priKey, pubKey
 }
 
 // https://studygolang.com/articles/12303

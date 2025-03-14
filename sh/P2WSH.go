@@ -1,7 +1,7 @@
-package main
+package sh
 
 import (
-	main2 "btctest"
+	"btctest/common"
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
@@ -13,13 +13,9 @@ import (
 	"log"
 )
 
-//
-//P2WSH（Pay-to-Witness-Script-Hash）
-//
-//P2WSH 是 SegWit 的多重签名地址（如 bc1q... 或 tb1q...），使用隔离见证技术
-//
-//
-
+// P2WSH（Pay-to-Witness-Script-Hash）
+// P2WSH 是 SegWit 的多重签名地址（如 bc1q... 或 tb1q...），使用隔离见证技术
+// https://mempool.space/zh/address/bc1qh2vyufvgmh73rcgujge3jmfq0rcmej5m0dxhwlrqcwtv707gt7yqf5xg2e
 func CreateP2WSHTransaction() {
 	cfg := &chaincfg.TestNet3Params
 
@@ -28,12 +24,6 @@ func CreateP2WSHTransaction() {
 	if err != nil {
 		log.Fatalf("Failed to decode WIF: %v", err)
 	}
-
-	// 创建多重签名脚本（2-of-3）
-	//pubKey1 := wif.PrivKey.PubKey()
-	//pubKey2, _ := btcec.NewPrivateKey()
-	//pubKey3, _ := btcec.NewPrivateKey()
-
 	address1, _ := btcutil.NewAddressPubKey(wif.PrivKey.PubKey().SerializeUncompressed(), cfg)
 	pk2, _ := hex.DecodeString("03073d3cf516dceeffaa53a84059fb8701ff5e291b9537457137be851bbc4e5525")
 	address2, _ := btcutil.NewAddressPubKey(pk2, cfg)
@@ -51,7 +41,7 @@ func CreateP2WSHTransaction() {
 	log.Printf("P2WSH testnet address: %s\n", p2wshAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := main2.GetUnspent(p2wshAddr.String())
+	point, fetcher := common.GetUnspent(p2wshAddr.String())
 
 	// 目标地址
 	destStr := "tb1q4y8u9e0pz7x6w5z3v2c1b0n9m8l7k6j5i4h3g2f1e0d"

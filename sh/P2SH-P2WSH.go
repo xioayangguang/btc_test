@@ -1,6 +1,7 @@
-package main
+package sh
 
 import (
+	"btctest/common"
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
@@ -12,15 +13,28 @@ import (
 	"log"
 )
 
+// https://mempool.space/zh/address/3MaE1ACBvr5SsQFHkpVU12tMDkvZ9Yxruu
 func main() {
 	// 使用比特币测试网参数
 	cfg := &chaincfg.TestNet3Params
-	pk1, _ := hex.DecodeString("03073d3cf516dceeffaa53a84059fb8701ff5e291b9537457137be851bbc4e5525")
-	address1, _ := btcutil.NewAddressPubKey(pk1, cfg)
-	pk2, _ := hex.DecodeString("03073d3cf516dceeffaa53a84059fb8701ff5e291b9537457137be851bbc4e5525")
-	address2, _ := btcutil.NewAddressPubKey(pk2, cfg)
-	pk3, _ := hex.DecodeString("03073d3cf516dceeffaa53a84059fb8701ff5e291b9537457137be851bbc4e5525")
-	address3, _ := btcutil.NewAddressPubKey(pk3, cfg)
+	wif, err := btcutil.DecodeWIF("cViUtGHsa6XUxxk2Qht23NKJvEzQq5mJYQVFRsEbB1PmSHMmBs4T")
+	if err != nil {
+		log.Fatalf("Failed to decode WIF: %v", err)
+	}
+	address1, _ := btcutil.NewAddressPubKey(wif.PrivKey.PubKey().SerializeUncompressed(), cfg)
+
+	wif1, err := btcutil.DecodeWIF("cViUtGHsa6XUxxk2Qht23NKJvEzQq5mJYQVFRsEbB1PmSHMmBs4T")
+	if err != nil {
+		log.Fatalf("Failed to decode WIF: %v", err)
+	}
+	address2, _ := btcutil.NewAddressPubKey(wif1.PrivKey.PubKey().SerializeUncompressed(), cfg)
+
+	wif2, err := btcutil.DecodeWIF("cViUtGHsa6XUxxk2Qht23NKJvEzQq5mJYQVFRsEbB1PmSHMmBs4T")
+	if err != nil {
+		log.Fatalf("Failed to decode WIF: %v", err)
+	}
+	address3, _ := btcutil.NewAddressPubKey(wif2.PrivKey.PubKey().SerializeUncompressed(), cfg)
+
 	script, _ := txscript.MultiSigScript([]*btcutil.AddressPubKey{address1, address2, address3}, 2)
 
 	// 生成 P2WSH 脚本
@@ -41,7 +55,7 @@ func main() {
 	log.Printf("P2SH-P2WSH testnet address: %s\n", p2shAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := GetUnspent(p2shAddr.String())
+	point, fetcher := common.GetUnspent(p2shAddr.String())
 
 	// 目标地址
 	destStr := "tb1q4y8u9e0pz7x6w5z3v2c1b0n9m8l7k6j5i4h3g2f1e0d"

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"btctest/common"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -12,7 +13,8 @@ import (
 )
 
 // 3开始的私人地址，(也就是兼容隔离见证地址)
-func main() {
+// https://mempool.space/zh/address/37jBeV3gZbf3GozoPyVD7htZzw2mrELy4N
+func main22() {
 	// 使用比特币测试网参数
 	cfg := &chaincfg.TestNet3Params
 
@@ -41,7 +43,7 @@ func main() {
 	log.Printf("P2SH-P2WPKH testnet address: %s\n", p2shAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := GetUnspent(p2shAddr.String())
+	point, fetcher := common.GetUnspent(p2shAddr.String())
 
 	// 创建交易
 	tx := wire.NewMsgTx(wire.TxVersion)
@@ -71,7 +73,6 @@ func main() {
 	}
 	tx.TxIn[0].SignatureScript = sigScript //todo 这里不知道正确与否，需要给SignatureScript赋值与否
 	tx.TxIn[0].Witness = witness
-
 	// 序列化交易
 	var signedTx bytes.Buffer
 	tx.Serialize(&signedTx)
@@ -84,10 +85,8 @@ func main() {
 func SignP2SHP2WPKHTransaction(tx *wire.MsgTx, p2wpkhScript []byte, wif *btcutil.WIF, fetcher *txscript.MultiPrevOutFetcher) (wire.TxWitness, []byte, error) {
 	// 获取交易输入的 UTXO
 	prevOutput := fetcher.FetchPrevOutput(tx.TxIn[0].PreviousOutPoint)
-
 	// 创建签名哈希
 	sigHashes := txscript.NewTxSigHashes(tx, fetcher)
-
 	// 生成见证签名
 	witnessSig, err := txscript.WitnessSignature(
 		tx, sigHashes, 0, prevOutput.Value, p2wpkhScript,
@@ -96,12 +95,10 @@ func SignP2SHP2WPKHTransaction(tx *wire.MsgTx, p2wpkhScript []byte, wif *btcutil
 	if err != nil {
 		return nil, nil, err
 	}
-
 	// 生成签名脚本（包含 P2WPKH 赎回脚本）
 	sigScript, err := txscript.NewScriptBuilder().AddData(p2wpkhScript).Script()
 	if err != nil {
 		return nil, nil, err
 	}
-
 	return witnessSig, sigScript, nil
 }
