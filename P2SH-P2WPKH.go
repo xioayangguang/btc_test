@@ -11,6 +11,7 @@ import (
 	"log"
 )
 
+// 3开始的私人地址，(也就是兼容隔离见证地址)
 func main() {
 	// 使用比特币测试网参数
 	cfg := &chaincfg.TestNet3Params
