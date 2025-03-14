@@ -8,3 +8,6 @@
 
 
 P2SH-P2WSH是最复杂的地址，复杂的地址都是嵌套生成的
+
+
+https://bitcoincore.org/en/segwit_wallet_dev/#creation-of-p2sh-p2wsh-address
