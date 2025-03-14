@@ -53,18 +53,6 @@ func main() {
 	fmt.Printf("Signed Transaction:\n%s", finalRawTx)
 }
 
-//
-//func GetUnspent(address string) (*wire.OutPoint, *txscript.MultiPrevOutFetcher) {
-//	txHash, _ := chainhash.NewHashFromStr(
-//		"7282d54f485561dd21ba22a971b096eb6d0f45ed2fe6bf8c29d87cee162633b4")
-//	point := wire.NewOutPoint(txHash, uint32(0))
-//	script, _ := hex.DecodeString("51208b63f2ee8d7a385e12c0e0f7599cd86ef6e2aed7b9e033762afb177f16c2f309")
-//	output := wire.NewTxOut(int64(1000), script)
-//	fetcher := txscript.NewMultiPrevOutFetcher(nil)
-//	fetcher.AddPrevOut(*point, output)
-//	return point, fetcher
-//}
-
 func DecodeTaprootAddress(strAddr string, cfg *chaincfg.Params) ([]byte, error) {
 	taprootAddr, err := btcutil.DecodeAddress(strAddr, cfg)
 	if err != nil {

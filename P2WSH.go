@@ -50,7 +50,7 @@ func CreateP2WSHTransaction() {
 	log.Printf("P2WSH testnet address: %s\n", p2wshAddr.String())
 
 	// 获取未花费的交易输出（UTXO）
-	point, fetcher := GetUnspent(p2wshAddr.String())
+	point, fetcher := main.GetUnspent(p2wshAddr.String())
 
 	// 目标地址
 	destStr := "tb1q4y8u9e0pz7x6w5z3v2c1b0n9m8l7k6j5i4h3g2f1e0d"

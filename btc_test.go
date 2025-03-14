@@ -44,6 +44,7 @@ func init() {
 	client = c
 }
 
+// 研究https://mempool.space/zh/tx/fc1e70787d2bc345eb9cf0e3bc55eeeaa6eb3bb3365e0995d6a62e4dfabf8caf这个地址的交易类型
 // 通过私钥生成所有的私人地址，多签名钱包不属于私人地址。因为和其他不同的钱包地址组合都是不同的多签钱包地址
 func NewBTCAddress() {
 	var pubKey *secp256k1.PublicKey
@@ -112,8 +113,8 @@ func NewBTCAddress() {
 	}
 	fmt.Printf("unCompressed Bech32 Address: %s\n", addressBech32_2.EncodeAddress())
 	fmt.Println()
-	fmt.Println("===================P2SH 兼容隔离见证地址===============================")
-	fmt.Println("3开头的地址一部分是多签地址，一部分是隔离见证兼容地址，具体属于那种地址可以去区块链浏览器查看地址类型")
+	fmt.Println("===================P2SH-P2WPKH  兼容隔离见证地址===============================")
+	fmt.Println("3开头的地址一部分是多签地址(背后被其他多个其他类型的地址操控)，一部分是隔离见证兼容地址（私人控制，现在生成的就是私人控制类型的地址），具体属于那种地址可以去区块链浏览器查看地址类型")
 	fmt.Println("3开头的多签地址 本钱包和其他任何地址组合成的多签地址都不一样")
 	witnessScript, err := txscript.PayToAddrScript(addressBech32_1)
 	if err != nil {
