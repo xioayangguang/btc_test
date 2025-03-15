@@ -129,7 +129,7 @@ func GetUTXOs(addr string) ([]*btcjson.ListUnspentResult, error) {
 			}
 
 			// 使用GetTxOut方法获取交易输出，确认该输出是否未花费
-			utxo, err := client.GetTxOut(txid, vout.N, true)
+			utxo, err := client.GetTxOut(txid, vout.N, false)
 			if err != nil {
 				panic(err)
 			}
@@ -157,13 +157,13 @@ func GetUTXOs(addr string) ([]*btcjson.ListUnspentResult, error) {
 func BuildTxIn(wif *btcutil.WIF, amount int64, txOut *wire.TxOut, params *chaincfg.Params) (*wire.MsgTx, error) {
 	// 解析比特币地址
 	//fromAddr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(wif.SerializePubKey()), params)
-	fromAddr, err := btcutil.NewAddressPubKey(wif.SerializePubKey(), params)
+	fromAddr, err := btcutil.NewAddressPubKey(wif.SerializePubKey(), params) //注意此处生成的地址是P2PK地址
 	if err != nil {
 		return nil, errors.Wrap(err, "解析比特币地址失败")
 	}
 
 	// 获取UTXOs
-	utxos, err := GetUTXOs(fromAddr.EncodeAddress())
+	utxos, err := GetUTXOs(fromAddr.EncodeAddress()) //注意 fromAddr.EncodeAddress() 生成的是P2Ph类型的地址
 	if err != nil {
 		return nil, errors.Wrap(err, "获取UTXOs失败")
 	}

@@ -12,7 +12,6 @@ import (
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
-
 	"log"
 	"testing"
 )
@@ -47,7 +46,7 @@ func NewBTCAddress() {
 	var pubKey *secp256k1.PublicKey
 	if true {
 		//https://key.tokenpocket.pro/?locale=zh#/?network=BTC
-		wifStr := "L5A7ZqEJswd2RXFdDeWYj2kmLZKnC2HWvzDosdZ8TxsFXvnSrcyb"
+		wifStr := "92exWYZpKJQScvhuYqszQFMfahJzQCwZCBH5N6R6wRhSPok9rti"
 		// 解析 WIF 格式的私钥
 		wif, err := btcutil.DecodeWIF(wifStr)
 		if err != nil {
@@ -72,11 +71,12 @@ func NewBTCAddress() {
 		}
 		fmt.Printf("Uncompressed WIF Private Key: %s\n", wifPrivate.String())
 		fmt.Println()
-		fmt.Println("=================== Public Key===============================")
 		// 导出公钥
 		pubKey = privKey.PubKey()
 	}
 
+	fmt.Println("=================== Public Key  其实就是 P2PK类型的钱包地址===============================")
+	//P2PK示例:  https://mempool.space/zh/testnet/address/04009cdbc845eec0952b0928ffccd1e0e9e0a039a6240985ecbb5ea5a0b312de998ebde3cf44807b767f2430d8c2e9e24fb488774bcdd6ee5e869339728e64e5e1
 	compressedPubKey := pubKey.SerializeCompressed()
 	fmt.Printf("compressed  Public Key: %x\n", compressedPubKey)
 	uncompressedPubKey := pubKey.SerializeUncompressed()
@@ -85,13 +85,13 @@ func NewBTCAddress() {
 	pubKeyHashCompressed := btcutil.Hash160(compressedPubKey)
 	fmt.Println()
 	fmt.Println("===================P2PKH===============================")
-	addressPKH, err := btcutil.NewAddressPubKey(compressedPubKey, &chaincfg.MainNetParams)
+	addressPKH, err := btcutil.NewAddressPubKey(compressedPubKey, &chaincfg.TestNet3Params)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("compressed P2PKH Address: %s\n", addressPKH.EncodeAddress())
 	// 生成BTC地址（P2PKH）
-	addressPKH, err = btcutil.NewAddressPubKey(uncompressedPubKey, &chaincfg.MainNetParams)
+	addressPKH, err = btcutil.NewAddressPubKey(uncompressedPubKey, &chaincfg.TestNet3Params)
 	if err != nil {
 		panic(err)
 	}
@@ -141,7 +141,6 @@ func NewBTCAddress() {
 
 func TestA(t *testing.T) {
 	NewBTCAddress()
-
 	GenP2SHAddress()
 }
 
