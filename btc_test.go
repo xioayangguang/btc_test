@@ -6,43 +6,40 @@ import (
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcec/v2/schnorr"
-	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
-	//_ "github.com/btcsuite/btcwallet"
-	"github.com/pkg/errors"
+
 	"log"
-	"os"
 	"testing"
 )
 
-var client *rpcclient.Client
-
-func init() {
-	cert, err := os.ReadFile("./btcd/rpc.cert")
-	if err != nil {
-		panic(err)
-	}
-	//Connect to local bitcoin core RPC server using HTTP POST mode.
-	connCfg := &rpcclient.ConnConfig{
-		Host:         "localhost:18332",
-		User:         "your_rpc_user",
-		Pass:         "your_rpc_password",
-		HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
-		DisableTLS:   true, // Bitcoin core does not provide TLS by default
-		Certificates: cert,
-	}
-	c, err := rpcclient.New(connCfg, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	client = c
-}
+//
+//var client *rpcclient.Client
+//
+//func init() {
+//	cert, err := os.ReadFile("./btcd/rpc.cert")
+//	if err != nil {
+//		panic(err)
+//	}
+//	//Connect to local bitcoin core RPC server using HTTP POST mode.
+//	connCfg := &rpcclient.ConnConfig{
+//		Host:         "localhost:18332",
+//		User:         "your_rpc_user",
+//		Pass:         "your_rpc_password",
+//		HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
+//		DisableTLS:   true, // Bitcoin core does not provide TLS by default
+//		Certificates: cert,
+//	}
+//	c, err := rpcclient.New(connCfg, nil)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	client = c
+//}
 
 // 研究https://mempool.space/zh/tx/fc1e70787d2bc345eb9cf0e3bc55eeeaa6eb3bb3365e0995d6a62e4dfabf8caf这个地址的交易类型
 // 通过私钥生成所有的私人地址，多签名钱包不属于私人地址。因为和其他不同的钱包地址组合都是不同的多签钱包地址
@@ -326,159 +323,160 @@ func TestC(t *testing.T) {
 
 }
 
-// BuildTxOut 构建一个比特币交易输出（TxOut）
-func BuildTxOut(addr string, amount int64, params chaincfg.Params) (*wire.TxOut, []byte, error) {
-	// 解析比特币地址
-	destinationAddress, err := btcutil.DecodeAddress(addr, &params)
-	if err != nil {
-		return nil, nil, err
-	}
-	// 生成支付到地址的脚本
-	pkScript, err := txscript.PayToAddrScript(destinationAddress)
-	if err != nil {
-		return nil, nil, err
-	}
-	// 创建一个新的交易输出，金额单位为 satoshis
-	return wire.NewTxOut(amount, pkScript), pkScript, nil
-}
-
-// GetUTXOs 获取指定比特币地址的所有未花费交易输出（UTXOs）
-func GetUTXOs(addr string) ([]*btcjson.ListUnspentResult, error) {
-	// 解析比特币地址
-	address, err := btcutil.DecodeAddress(addr, &chaincfg.TestNet3Params)
-	if err != nil {
-		return nil, err
-	}
-
-	// 使用SearchRawTransactionsVerbose获取与地址相关的所有交易
-	transactions, err := client.SearchRawTransactionsVerbose(address, 0, 100, true, false, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	// 用于存储UTXO的切片
-	utxos := []*btcjson.ListUnspentResult{}
-
-	// 遍历所有交易
-	for _, tx := range transactions {
-		// 将交易ID字符串转换为链哈希对象
-		txid, err := chainhash.NewHashFromStr(tx.Txid)
-		if err != nil {
-			log.Fatalf("Invalid txid: %v", err)
-		}
-
-		// 遍历交易的输出
-		for _, vout := range tx.Vout {
-			// 检查输出地址是否是我们关心的地址
-			if vout.ScriptPubKey.Address != addr {
-				continue
-			}
-
-			// 使用GetTxOut方法获取交易输出，确认该输出是否未花费
-			utxo, err := client.GetTxOut(txid, vout.N, true)
-			if err != nil {
-				panic(err)
-			}
-
-			// 如果交易输出未花费，则将其添加到UTXO切片中
-			if utxo != nil {
-				utxo := &btcjson.ListUnspentResult{
-					TxID:          tx.Txid,
-					Vout:          uint32(vout.N),
-					Address:       addr,
-					ScriptPubKey:  vout.ScriptPubKey.Hex,
-					Amount:        vout.Value, // 单位为BTC
-					Confirmations: int64(tx.Confirmations),
-					Spendable:     true,
-				}
-				utxos = append(utxos, utxo)
-			}
-		}
-	}
-	// 返回UTXO集合
-	return utxos, nil
-}
-
-func BuildTxIn(wif *btcutil.WIF, amount int64, txOut *wire.TxOut, params *chaincfg.Params) (*wire.MsgTx, error) {
-	msgTx := wire.NewMsgTx(wire.TxVersion)
-	msgTx.AddTxOut(txOut)
-
-	// 解析比特币地址
-	fromAddr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(wif.SerializePubKey()), params)
-	if err != nil {
-		return nil, errors.Wrap(err, "解析比特币地址失败")
-	}
-	// 获取UTXOs
-	utxos, err := GetUTXOs(fromAddr.EncodeAddress())
-	if err != nil {
-		return nil, errors.Wrap(err, "获取UTXOs失败")
-	}
-
-	// 创建一个新的交易输入，金额单位为 satoshis
-	totalInput := int64(0)
-	for _, utxo := range utxos {
-		// totalInput 大于 amount，用于计算交易费
-		if totalInput > amount {
-			break
-		}
-		txHash, err := chainhash.NewHashFromStr(utxo.TxID)
-		if err != nil {
-			return nil, errors.Wrap(err, "解析交易哈希失败")
-		}
-		txIn := wire.NewTxIn(&wire.OutPoint{
-			Hash:  *txHash,
-			Index: utxo.Vout,
-		}, nil, nil)
-
-		msgTx.AddTxIn(txIn)
-		totalInput += int64(utxo.Amount * 1e8)
-	}
-
-	// 交易费
-	// 假定交易费率为每字节 1sat
-	fee := int64(msgTx.SerializeSize())
-	// 找零
-	change := totalInput - amount
-	// 这里假定找零一定大于交易费，交易费太少的话可能导致交易一直无法确认
-	// 如果change <= fee的话，零钱会转给出块的矿工
-	if change > fee {
-		changePkScript, err := txscript.PayToAddrScript(fromAddr)
-		if err != nil {
-			return nil, errors.Wrap(err, "生成找零地址的脚本失败")
-		}
-		txOut := wire.NewTxOut(change-fee, changePkScript)
-		msgTx.AddTxOut(txOut)
-	}
-
-	// 签署交易
-	// 发送方地址为SegWit的P2WPKH 地址，所以要消费该地址的UTXO，只能通过见证输入进行消费
-	for i, txIn := range msgTx.TxIn {
-		prevOutputScript, err := hex.DecodeString(utxos[i].ScriptPubKey)
-		if err != nil {
-			panic(err)
-		}
-
-		txHash, err := chainhash.NewHashFromStr(utxos[i].TxID)
-		if err != nil {
-			return nil, errors.Wrap(err, "解析交易哈希失败")
-		}
-
-		outPoint := wire.OutPoint{Hash: *txHash, Index: utxos[i].Vout}
-
-		prevOutputFetcher := txscript.NewMultiPrevOutFetcher(map[wire.OutPoint]*wire.TxOut{
-			outPoint: {
-				Value:    int64(utxos[i].Amount * 1e8),
-				PkScript: prevOutputScript,
-			},
-		})
-
-		sigHashes := txscript.NewTxSigHashes(msgTx, prevOutputFetcher)
-
-		sigScript, err := txscript.WitnessSignature(msgTx, sigHashes, int(utxos[i].Vout), int64(utxos[i].Amount*1e8), prevOutputScript, txscript.SigHashAll, wif.PrivKey, true)
-		if err != nil {
-			return nil, errors.Wrap(err, "签名交易失败")
-		}
-		txIn.Witness = sigScript
-	}
-	return msgTx, nil
-}
+//
+//// BuildTxOut 构建一个比特币交易输出（TxOut）
+//func BuildTxOut(addr string, amount int64, params chaincfg.Params) (*wire.TxOut, []byte, error) {
+//	// 解析比特币地址
+//	destinationAddress, err := btcutil.DecodeAddress(addr, &params)
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//	// 生成支付到地址的脚本
+//	pkScript, err := txscript.PayToAddrScript(destinationAddress)
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//	// 创建一个新的交易输出，金额单位为 satoshis
+//	return wire.NewTxOut(amount, pkScript), pkScript, nil
+//}
+//
+//// GetUTXOs 获取指定比特币地址的所有未花费交易输出（UTXOs）
+//func GetUTXOs(addr string) ([]*btcjson.ListUnspentResult, error) {
+//	// 解析比特币地址
+//	address, err := btcutil.DecodeAddress(addr, &chaincfg.TestNet3Params)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// 使用SearchRawTransactionsVerbose获取与地址相关的所有交易
+//	transactions, err := client.SearchRawTransactionsVerbose(address, 0, 100, true, false, nil)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// 用于存储UTXO的切片
+//	utxos := []*btcjson.ListUnspentResult{}
+//
+//	// 遍历所有交易
+//	for _, tx := range transactions {
+//		// 将交易ID字符串转换为链哈希对象
+//		txid, err := chainhash.NewHashFromStr(tx.Txid)
+//		if err != nil {
+//			log.Fatalf("Invalid txid: %v", err)
+//		}
+//
+//		// 遍历交易的输出
+//		for _, vout := range tx.Vout {
+//			// 检查输出地址是否是我们关心的地址
+//			if vout.ScriptPubKey.Address != addr {
+//				continue
+//			}
+//
+//			// 使用GetTxOut方法获取交易输出，确认该输出是否未花费
+//			utxo, err := client.GetTxOut(txid, vout.N, true)
+//			if err != nil {
+//				panic(err)
+//			}
+//
+//			// 如果交易输出未花费，则将其添加到UTXO切片中
+//			if utxo != nil {
+//				utxo := &btcjson.ListUnspentResult{
+//					TxID:          tx.Txid,
+//					Vout:          uint32(vout.N),
+//					Address:       addr,
+//					ScriptPubKey:  vout.ScriptPubKey.Hex,
+//					Amount:        vout.Value, // 单位为BTC
+//					Confirmations: int64(tx.Confirmations),
+//					Spendable:     true,
+//				}
+//				utxos = append(utxos, utxo)
+//			}
+//		}
+//	}
+//	// 返回UTXO集合
+//	return utxos, nil
+//}
+//
+//func BuildTxIn(wif *btcutil.WIF, amount int64, txOut *wire.TxOut, params *chaincfg.Params) (*wire.MsgTx, error) {
+//	msgTx := wire.NewMsgTx(wire.TxVersion)
+//	msgTx.AddTxOut(txOut)
+//
+//	// 解析比特币地址
+//	fromAddr, err := btcutil.NewAddressWitnessPubKeyHash(btcutil.Hash160(wif.SerializePubKey()), params)
+//	if err != nil {
+//		return nil, errors.Wrap(err, "解析比特币地址失败")
+//	}
+//	// 获取UTXOs
+//	utxos, err := GetUTXOs(fromAddr.EncodeAddress())
+//	if err != nil {
+//		return nil, errors.Wrap(err, "获取UTXOs失败")
+//	}
+//
+//	// 创建一个新的交易输入，金额单位为 satoshis
+//	totalInput := int64(0)
+//	for _, utxo := range utxos {
+//		// totalInput 大于 amount，用于计算交易费
+//		if totalInput > amount {
+//			break
+//		}
+//		txHash, err := chainhash.NewHashFromStr(utxo.TxID)
+//		if err != nil {
+//			return nil, errors.Wrap(err, "解析交易哈希失败")
+//		}
+//		txIn := wire.NewTxIn(&wire.OutPoint{
+//			Hash:  *txHash,
+//			Index: utxo.Vout,
+//		}, nil, nil)
+//
+//		msgTx.AddTxIn(txIn)
+//		totalInput += int64(utxo.Amount * 1e8)
+//	}
+//
+//	// 交易费
+//	// 假定交易费率为每字节 1sat
+//	fee := int64(msgTx.SerializeSize())
+//	// 找零
+//	change := totalInput - amount
+//	// 这里假定找零一定大于交易费，交易费太少的话可能导致交易一直无法确认
+//	// 如果change <= fee的话，零钱会转给出块的矿工
+//	if change > fee {
+//		changePkScript, err := txscript.PayToAddrScript(fromAddr)
+//		if err != nil {
+//			return nil, errors.Wrap(err, "生成找零地址的脚本失败")
+//		}
+//		txOut := wire.NewTxOut(change-fee, changePkScript)
+//		msgTx.AddTxOut(txOut)
+//	}
+//
+//	// 签署交易
+//	// 发送方地址为SegWit的P2WPKH 地址，所以要消费该地址的UTXO，只能通过见证输入进行消费
+//	for i, txIn := range msgTx.TxIn {
+//		prevOutputScript, err := hex.DecodeString(utxos[i].ScriptPubKey)
+//		if err != nil {
+//			panic(err)
+//		}
+//
+//		txHash, err := chainhash.NewHashFromStr(utxos[i].TxID)
+//		if err != nil {
+//			return nil, errors.Wrap(err, "解析交易哈希失败")
+//		}
+//
+//		outPoint := wire.OutPoint{Hash: *txHash, Index: utxos[i].Vout}
+//
+//		prevOutputFetcher := txscript.NewMultiPrevOutFetcher(map[wire.OutPoint]*wire.TxOut{
+//			outPoint: {
+//				Value:    int64(utxos[i].Amount * 1e8),
+//				PkScript: prevOutputScript,
+//			},
+//		})
+//
+//		sigHashes := txscript.NewTxSigHashes(msgTx, prevOutputFetcher)
+//
+//		sigScript, err := txscript.WitnessSignature(msgTx, sigHashes, int(utxos[i].Vout), int64(utxos[i].Amount*1e8), prevOutputScript, txscript.SigHashAll, wif.PrivKey, true)
+//		if err != nil {
+//			return nil, errors.Wrap(err, "签名交易失败")
+//		}
+//		txIn.Witness = sigScript
+//	}
+//	return msgTx, nil
+//}
