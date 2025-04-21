@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/btcutil"
@@ -13,52 +12,51 @@ import (
 	"github.com/btcsuite/btcd/wire"
 	"github.com/pkg/errors"
 	"log"
-	"os"
 )
 
 var client = &rpcclient.Client{}
 
 func init() {
 	// 使用tls链接，所以需要导入btcd生成的rpc证书
-	cert, err := os.ReadFile("./rpc.cert")
-	if err != nil {
-		panic(err)
-	}
-	connCfg := &rpcclient.ConnConfig{
-		Host: "192.168.31.4:8334",
-		//Host:         "127.0.0.1:8334",
-		User:         "root",
-		Pass:         "root",
-		HTTPPostMode: true,
-		//DisableTLS:   true,
-		Certificates: cert,
-	}
-	//var err error
-	client, err = rpcclient.New(connCfg, nil)
-	if err != nil {
-		panic(err)
-	}
-	blockCount, err := client.GetBlockCount()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Block count: %d", blockCount)
-	hash, err := client.GetBlockHash(blockCount)
-	if err != nil {
-		log.Fatal(err)
-	}
-	block, err := client.GetBlock(hash)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Block version: %v\n", block.Header.Version)
-	fmt.Printf("Block hash: %v\n", block.BlockHash())
-	fmt.Printf("Block previous hash: %v\n", block.Header.PrevBlock)
-	fmt.Printf("Block merkle root: %v\n", block.Header.MerkleRoot)
-	fmt.Printf("Block timestamp: %v\n", block.Header.Timestamp)
-	fmt.Printf("Block bits: %v\n", block.Header.Bits)
-	fmt.Printf("Block nonce: %v\n", block.Header.Nonce)
-	fmt.Printf("Number of transactions in block: %v\n", len(block.Transactions))
+	//cert, err := os.ReadFile("./rpc.cert")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//connCfg := &rpcclient.ConnConfig{
+	//	Host: "192.168.31.4:8334",
+	//	//Host:         "127.0.0.1:8334",
+	//	User:         "root",
+	//	Pass:         "root",
+	//	HTTPPostMode: true,
+	//	//DisableTLS:   true,
+	//	Certificates: cert,
+	//}
+	////var err error
+	//client, err = rpcclient.New(connCfg, nil)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//blockCount, err := client.GetBlockCount()
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//log.Printf("Block count: %d", blockCount)
+	//hash, err := client.GetBlockHash(blockCount)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//block, err := client.GetBlock(hash)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Printf("Block version: %v\n", block.Header.Version)
+	//fmt.Printf("Block hash: %v\n", block.BlockHash())
+	//fmt.Printf("Block previous hash: %v\n", block.Header.PrevBlock)
+	//fmt.Printf("Block merkle root: %v\n", block.Header.MerkleRoot)
+	//fmt.Printf("Block timestamp: %v\n", block.Header.Timestamp)
+	//fmt.Printf("Block bits: %v\n", block.Header.Bits)
+	//fmt.Printf("Block nonce: %v\n", block.Header.Nonce)
+	//fmt.Printf("Number of transactions in block: %v\n", len(block.Transactions))
 }
 
 func GenerateBTCTest() (string, string, error) {

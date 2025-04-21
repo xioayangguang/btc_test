@@ -7,3 +7,11 @@ P2SH-P2WSH是最复杂的地址，复杂的地址都是嵌套生成的
 调试问题对应区块链浏览器排查，查看交易地址类型，查看对应的utxo，查看交易脚本
 
 https://bitcoincore.org/en/segwit_wallet_dev/#creation-of-p2sh-p2wsh-address
+
+
+
+![这是图片1](./1.jpg")
+
+
+
+![这是图片2](./2.jpg")

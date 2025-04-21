@@ -13,6 +13,8 @@ import (
 	"log"
 )
 
+//用p2sh包裹一层的p2wsh的地址类型，这种类型的地址签名应该设置SignatureScript和Witness
+
 // https://mempool.space/zh/address/3MaE1ACBvr5SsQFHkpVU12tMDkvZ9Yxruu
 func main() {
 	// 使用比特币测试网参数

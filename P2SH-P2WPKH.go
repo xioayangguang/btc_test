@@ -12,6 +12,8 @@ import (
 	"log"
 )
 
+//用p2sh包裹一层的p2wpkh的地址类型，这种类型的地址签名应该设置SignatureScript和Witness
+
 // 3开始的私人地址，(也就是兼容隔离见证地址)
 // https://mempool.space/zh/address/37jBeV3gZbf3GozoPyVD7htZzw2mrELy4N
 func main22() {
